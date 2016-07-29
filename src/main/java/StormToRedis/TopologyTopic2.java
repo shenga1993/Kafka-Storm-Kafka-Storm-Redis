@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.generated.AlreadyAliveException;
@@ -34,14 +32,12 @@ import redisUtils.RedisUtils;
 
 public class TopologyTopic2 {
 	
-	private static final Log LOG = LogFactory.getLog(TopologyTopic2.class);
 	public static class MyBolt extends BaseBasicBolt {
 
 		/**
 		 * 
 		 */
 		
-		private static final long serialVersionUID = -4571722387795576378L;
 		private Jedis jedis = null;
 		private static int count = 0;
 		@SuppressWarnings("rawtypes")
@@ -51,7 +47,6 @@ public class TopologyTopic2 {
 			super.prepare(stormConf, context);
 			try{
 				jedis = RedisUtils.redisConnect("localhost");
-				LOG.info("redis connected");
 			}
 			catch(Exception e){
 				throw new RuntimeException();
@@ -64,7 +59,6 @@ public class TopologyTopic2 {
 			String msg = (String) input.getValue(0);
 			count=count+1;
 			jedis.set(count+"",msg);
-			LOG.info("redis set key: "+count+" value= "+msg);
 		}
 
 		@Override
@@ -77,7 +71,6 @@ public class TopologyTopic2 {
 		public void cleanup() {
 			// TODO 自动生成的方法存根
 			jedis.close();
-			LOG.info("redis closed");
 		}
 
 	}
@@ -87,7 +80,6 @@ public class TopologyTopic2 {
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = -4571722387795576378L;
 
 		@Override
 		public List<Object> deserialize(ByteBuffer ser) {
@@ -95,7 +87,6 @@ public class TopologyTopic2 {
 			byte[] bufr = ser.array();
 			try {
 				String msg = new String(bufr,"UTF-8");
-				LOG.info("receive msg from topic2 :" + msg);
 				return new Values(msg);
 			} catch (UnsupportedEncodingException e) {
 				// TODO 自动生成的 catch 块
